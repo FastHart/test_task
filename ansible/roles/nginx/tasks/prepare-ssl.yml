@@ -1,0 +1,17 @@
+---
+- name: Create acme-challenge directory
+  become: yes
+  file:
+    path: "{{ nginx_server_root }}/.well-known/acme-challenge"
+    state: directory
+
+- name: Create ssl cert for {{ nginx_server_name }}
+  become: yes
+  shell: "{{ certbot }} {{ certbot_test_cert }} --no-self-upgrade certonly -n --webroot -w  {{ nginx_server_root }} -d {{ nginx_server_name }} -d www.{{ nginx_server_name }}"
+  when: generate_ssl_certs == true
+
+- name: Set path for ssl cert and ssl key if we use letsencript
+  set_fact:
+    nginx_ssl_key: "/etc/letsencrypt/live/{{ nginx_server_name }}/privkey.pem"
+    nginx_ssl_cert:  "/etc/letsencrypt/live/{{nginx_server_name}}/fullchain.pem"
+  when: generate_ssl_certs == true

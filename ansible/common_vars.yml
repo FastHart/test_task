@@ -1,0 +1,21 @@
+#
+# Common variables
+#
+nginx_server_name: test.ru
+php_socket: /run/{{ nginx_server_name }}
+
+#
+# Nginx variables
+#
+nginx_https_enable: false
+#- with static certs
+nginx_ssl_key:  /etc/nginx/ssl/privkey1.pem
+nginx_ssl_cert: /etc/nginx/ssl/fullchain1.pem
+#- with letsencript certs
+generate_ssl_certs: false
+certbot_test_cert: --test-cert
+
+#
+# PHP variables
+#
+php_version: 7.4

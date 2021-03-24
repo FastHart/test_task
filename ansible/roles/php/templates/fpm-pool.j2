@@ -1,0 +1,19 @@
+[{{nginx_server_name}}]
+user = www-data
+group = www-data
+listen = {{ php_socket }}
+listen.owner = www-data
+listen.group = www-data
+
+pm = dynamic
+pm.max_children = {{ fpm_max_children }}
+pm.start_servers = {{ fpm_start_servers }}
+pm.min_spare_servers = {{ fpm_min_spare_servers }}
+pm.max_spare_servers = {{ fpm_max_spare_servers }}
+pm.max_requests = {{ fpm_max_requests }}
+pm.process_idle_timeout = {{ fpm_process_idle_timeout }}
+pm.status_path = /status
+php_admin_value[upload_max_filesize] = {{ php_upload_max_filesize }}
+php_admin_value[post_max_size] = {{ php_post_max_size }}
+php_admin_value[memory_limit] = {{ php_memory_limit }}
+php_admin_value[error_log] = /var/log/php/{{ nginx_server_name }}

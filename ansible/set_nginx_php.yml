@@ -1,0 +1,8 @@
+---
+- hosts:
+    - nginx_nodes
+  roles:
+    - nginx
+    - php
+  vars_files:
+    - common_vars.yml

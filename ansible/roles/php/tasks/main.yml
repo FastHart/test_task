@@ -1,0 +1,9 @@
+---
+- name: Create php-fpm config for {{ nginx_server_name }}
+  become: yes
+  template:
+    src: "templates/fpm-pool.j2"
+    dest: "/etc/php/{{ php_version }}/fpm/pool.d/{{ nginx_server_name }}.conf"
+    backup: no
+  notify:
+    - restart php-fpm

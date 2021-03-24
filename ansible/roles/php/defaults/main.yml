@@ -1,0 +1,12 @@
+---
+php_version: 7.4
+php_socket: unix:/run/php-fpm.sock
+fpm_max_children: 100
+fpm_start_servers: 10
+fpm_min_spare_servers: 2
+fpm_max_spare_servers: 20
+fpm_max_requests: 2000
+fpm_process_idle_timeout: 10s
+php_upload_max_filesize: 100M
+php_post_max_size: 32M
+php_memory_limit: 128M

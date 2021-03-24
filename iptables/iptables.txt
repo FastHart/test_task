@@ -1,0 +1,47 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# Разрешаем исходящий трафик
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# цепочка для адресов, которым разрешено все (все порты)
+-N ALLOW_ALL
+-A ALLOW_ALL -j LOG --log-prefix "Chain ALLOW_ALL:"
+-A ALLOW_ALL -j ACCEPT
+
+# цепочка для адресов серверов баз данных и контейнеров с приложением, которым разрешено все
+-N APP_DB
+-A APP_DB -j LOG --log-prefix "Chain APP_DB:"
+-A APP_DB -j ACCEPT
+
+# цепочка, в которую будут заноситься адреса пользователей, которым нужен доступ по требованию. Им также разрешено все
+-N USERS_ALLOW_ALL
+-A USERS_ALLOW_ALL -j LOG --log-prefix "Chain USERS_ALLOW_ALL:"
+-A USERS_ALLOW_ALL -j ACCEPT
+
+# цепочка, в которую будут заноситься адреса пользователей с временным доступом, им разрешены только определенные порты
+-N USERS_RESTRICTED
+-A USERS_RESTRICTED -m multiport -p tcp --dports 22,25 -j LOG --log-prefix "Chain USERS_RESTRICTED:"
+-A USERS_RESTRICTED -m multiport -p tcp --dports 22,25 -j ACCEPT
+-A USERS_RESTRICTED -j RETURN
+
+# цепочка, в которую заносятся порты, смотрящие в мир
+-N PUBLIC
+-A PUBLIC -m multiport -p tcp --dports 80,443 -j LOG --log-prefix "Chain PUBLIC:"
+-A PUBLIC -m multiport -p tcp --dports 80,443 -j ACCEPT
+-A USERS_RESTRICTED -j RETURN
+
+# Используем IPset для того, что бы направить пакеты в цепочки
+-A INPUT -m set --match-set ALLOW_ALL src        -j ALLOW_ALL
+-A INPUT -m set --match-set APP_DB src           -j APP_DB
+-A INPUT -m set --match-set USERS_ALLOW_ALL src  -j USERS_ALLOW_ALL
+-A INPUT -m set --match-set USERS_RESTRICTED src -j USERS_RESTRICTED
+-A INPUT -j PUBLIC
+
+# Остальной трафик блокируем и все что блокируем - логируем
+-A INPUT -j LOG --log-prefix "Chain DROP:"
+-A INPUT -j DROP
+
+COMMIT

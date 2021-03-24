@@ -1,0 +1,37 @@
+server {
+    listen       80;
+    server_name  {{ nginx_server_name }} www.{{ nginx_server_name }};
+    return 302 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name  {{ nginx_server_name }} www.{{ nginx_server_name }};
+
+
+    ssl_certificate_key {{ nginx_ssl_key }};
+    ssl_certificate {{ nginx_ssl_cert }};
+
+    root         {{ nginx_server_root }}/{{ nginx_server_name }};
+
+    access_log /var/log/nginx/{{ nginx_server_name }}-access.log;
+    error_log  /var/log/nginx/{{ nginx_server_name }}-errors.log;
+
+    location / {
+       try_files      $uri   @phpindex;
+       expires        30d;
+    }
+
+    location ~ \.php$ {
+        try_files      $uri @phpindex;
+        fastcgi_pass   unix:{{ php_socket }};
+        fastcgi_param  SCRIPT_FILENAME  $realpath_root/$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+
+    location @phpindex {
+        fastcgi_pass   unix:{{ php_socket }};
+        fastcgi_param  SCRIPT_FILENAME  $realpath_root/index.php;
+        include        fastcgi_params;
+    }
+}

@@ -1,0 +1,2 @@
+[nginx_nodes]
+Test1 ansible_ssh_host=135.125.88.101 ansible_ssh_user=ubuntu

@@ -1,0 +1,6 @@
+create ALLOW_ALL        hash:ip family inet hashsize 1024 maxelem 65536
+create APP_DB           hash:ip family inet hashsize 1024 maxelem 65536
+create USERS_ALLOW_ALL  hash:ip family inet hashsize 1024 maxelem 65536
+create USERS_RESTRICTED hash:ip family inet hashsize 1024 maxelem 65536
+
+add  ALLOW_ALL 192.168.0.45

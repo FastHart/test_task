@@ -1,0 +1,31 @@
+---
+- name: Create html root dir "{{ nginx_server_root }}/{{ nginx_server_name }}"
+  become: yes
+  synchronize:
+    src:  "files/nginx_root_dir/"
+    dest: "{{ nginx_server_root }}/{{ nginx_server_name }}/"
+    group: no
+    owner: no
+
+- name: Prepare ssl
+  include: prepare-ssl.yml
+  when: nginx_https_enable == true
+
+- name: Create nginx config for {{ nginx_server_name }}
+  become: yes
+  template:
+    src: "templates/{% if nginx_https_enable == true %}domain_ssl.j2{% else %}domain.j2{% endif %}"
+    dest: "{{ nginx_sites_config_dir }}/{{ nginx_server_name }}.conf"
+    backup: no
+  notify:
+    - restart nginx
+
+- name: Check that our nginx config is valid
+  become: yes
+  command: nginx -t
+  register: result
+  ignore_errors: True
+
+- name: Ending playbook if nginx config test failed
+  fail: msg="Configuration for nginx file is not valid."
+  when: result is failed

@@ -1,0 +1,9 @@
+---
+nginx_sites_config_dir: /etc/nginx/conf.d
+nginx_server_root: /var/www/html
+nginx_https_enable: false
+generate_ssl_certs: false
+certbot: /usr/bin/certbot
+certbot_test_cert: ""
+
+php_socket: unix:/run/php-fpm.sock
